@@ -1,30 +1,46 @@
-import './App.css'
-import Updateuser from './Updateuser';
-import UserAdd from './UserAdd'
-import UserList from './UserList'
-import { NavLink, Route, Routes } from "react-router";
+import { useState } from "react";
+import "./App.css"
 
-function App() {
-  
-  return (
-    <div>
+function App(){
+  const [name,setName] = useState('');
+  const [nameErr,setNameErr] = useState('');
+
+  const [pass,setPass] = useState('');
+  const [passErr,setPassErr] = useState('');
+
+  function nameValidation(event){
+    console.log(event.target.value);
+    if(event.target.value.length > 6){
+      setNameErr("Name should be only 6 or less that 6 letters");
+    }else{
+      setNameErr('')
+    }  
+  }
+
+  function passValidation(event){
+    let regex = /^[A-Z0-9]+$/i;
+    if(regex.test(event.target.value)){
+      setPassErr('');
+    }else{
+      setPassErr("Password should not contain special character(!@#...etc)");
+    }
+  }
+
+  return(
+    <div className="container">
+      <div className="card">
+      <h3>Checking Simple validation</h3>
       
-      <ul className='Navlinks'>
-        <li>
-          <NavLink to="/">User list</NavLink>
-        </li>
-        <li>
-          
-          <NavLink to="adduser">Add User</NavLink>
-        </li>
-      </ul>
-      <h3>Make Routes and pages for Add,delete,update user and display user list</h3>
-      <Routes>
-        <Route path="/" element={<UserList />} />
-        <Route path='adduser' element={<UserAdd />} />
-        <Route path='/edit/:id' element={<Updateuser />} />
-      </Routes>
+        <input type="text" className={nameErr?'error':''} onChange={nameValidation} placeholder="Enter your name" />
+        <span className="error-text">{ nameErr && nameErr}</span>
+        
+        <input type="text" className={passErr?'error':''} onChange={passValidation} placeholder="Enter your Password" /> 
+        <span className="error-text">{passErr && passErr}</span>
+        
+        <button disabled={nameErr || passErr}>Login</button>
+      
+      </div>
     </div>
   )
 }
-export default App
+export default App;
