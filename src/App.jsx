@@ -1,46 +1,38 @@
-import { useState } from "react";
-import "./App.css"
+import { useActionState } from "react"
 
-function App(){
-  const [name,setName] = useState('');
-  const [nameErr,setNameErr] = useState('');
+export default function App(){
 
-  const [pass,setPass] = useState('');
-  const [passErr,setPassErr] = useState('');
-
-  function nameValidation(event){
-    console.log(event.target.value);
-    if(event.target.value.length > 6){
-      setNameErr("Name should be only 6 or less that 6 letters");
+  function handleLogin(prevData,formData){
+    let name = formData.get("name")
+    let pass = formData.get("password")
+    let regex = /^[A-Z0-9]+$/i
+    
+    if(!name || name.length>6){
+      return { Error: "Name should not be blank and less than 6 character",name, pass}
+    }else if(!regex.test(pass)){
+      return { Error: "Password should only contain numbers and alphabet",name, pass}
     }else{
-      setNameErr('')
-    }  
-  }
-
-  function passValidation(event){
-    let regex = /^[A-Z0-9]+$/i;
-    if(regex.test(event.target.value)){
-      setPassErr('');
-    }else{
-      setPassErr("Password should not contain special character(!@#...etc)");
+      return {message: 'Login Succesfully',name, pass}
     }
   }
 
+  const [data,action,pending] = useActionState(handleLogin)
+  
+
   return(
-    <div className="container">
-      <div className="card">
-      <h3>Checking Simple validation</h3>
-      
-        <input type="text" className={nameErr?'error':''} onChange={nameValidation} placeholder="Enter your name" />
-        <span className="error-text">{ nameErr && nameErr}</span>
-        
-        <input type="text" className={passErr?'error':''} onChange={passValidation} placeholder="Enter your Password" /> 
-        <span className="error-text">{passErr && passErr}</span>
-        
-        <button disabled={nameErr || passErr}>Login</button>
-      
-      </div>
+    <div>
+      <h3>useAtion State</h3>
+      {
+        data?.message && <span style={{color:'green'}}>{data.message}</span>
+      }
+      {
+        data?.Error && <span style={{color:"red"}}>{data.Error}</span>
+      }
+      <form action={action}>
+        <input type="text" defaultValue={data?.name} name="name" placeholder="Enter name"/> <br /><br />
+        <input type="text" defaultValue={data?.pass} name="password" placeholder="Enter Password"/> <br /><br />
+        <button>Login</button>
+      </form>
     </div>
   )
 }
-export default App;
