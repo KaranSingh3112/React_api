@@ -1,38 +1,39 @@
-import { useActionState } from "react"
+import { useReducer } from "react";
 
-export default function App(){
+const emptyData = {
+  name:'',
+  password:'',
+  email:'',
+  city:'',
+  address:'',
+}
+function getData(values,action){
+  return {...values,[action.type]:action.val}
 
-  function handleLogin(prevData,formData){
-    let name = formData.get("name")
-    let pass = formData.get("password")
-    let regex = /^[A-Z0-9]+$/i
-    
-    if(!name || name.length>6){
-      return { Error: "Name should not be blank and less than 6 character",name, pass}
-    }else if(!regex.test(pass)){
-      return { Error: "Password should only contain numbers and alphabet",name, pass}
-    }else{
-      return {message: 'Login Succesfully',name, pass}
-    }
-  }
-
-  const [data,action,pending] = useActionState(handleLogin)
   
+}
 
+function App(){
+  //dispatch :- use to get input field values
+  const [data,dispatch] = useReducer(getData,emptyData);
+   
   return(
     <div>
-      <h3>useAtion State</h3>
-      {
-        data?.message && <span style={{color:'green'}}>{data.message}</span>
-      }
-      {
-        data?.Error && <span style={{color:"red"}}>{data.Error}</span>
-      }
-      <form action={action}>
-        <input type="text" defaultValue={data?.name} name="name" placeholder="Enter name"/> <br /><br />
-        <input type="text" defaultValue={data?.pass} name="password" placeholder="Enter Password"/> <br /><br />
-        <button>Login</button>
-      </form>
+      <h3>useReducer hook</h3>
+      <input type="text" onChange={(event)=>dispatch({val:event.target.value,type:'name'})} placeholder="Enter name"/><br /> <br />
+      <input type="text" onChange={(event)=>dispatch({val:event.target.value,type:'password'})} placeholder="Enter Password"/><br /><br />
+      <input type="text" onChange={(event)=>dispatch({val:event.target.value,type:"email"})} placeholder="Enter Email"/><br /><br />
+      <input type="text" onChange={(event)=>dispatch({val:event.target.value,type:"city"})} placeholder="Enter City"/><br /><br />
+      <input type="text" onChange={(event)=>dispatch({val:event.target.value,type:'address'})} placeholder="Enter Address"/><br /><br />
+      <button>Submit</button>
+      <ul>
+        <li>Name: {data.name}</li>
+        <li>Password: {data.password}</li>
+        <li>Email: {data.email}</li>
+        <li>City: {data.city}</li>
+        <li>Address: {data.address}</li>
+      </ul>
     </div>
   )
 }
+export default App;
